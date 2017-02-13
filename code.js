@@ -59,45 +59,110 @@ let getPalindromes = function(txt){
   return palindromeList;
 }
 
-let getLongestWords = function(txt){
+let getLongestWords = function (txt) {
   let cleanedTxt = cleanPunc(txt).trim();
   let wordList = cleanedTxt.split(/\s+/);
+  let wordLengths = {};
+
+  for (let i=0; i<wordList.length; i++){
+    wordList[i] = wordList[i].toLowerCase();
+    wordLengths[wordList[i]] = 0;
+  }
+
+  for (let i=0; i<wordList.length; i++){
+    wordLengths[wordList[i]] = wordList[i].length;
+  }
+
+  uniqueWords = 0;
+  for (word in wordLengths){
+    uniqueWords++;
+  }
+
   let top10 = [];
-
-  while (top10.length < 10){
-    let longestWords = [].push(wordList[0]);
-    let longestWordLength = wordList[0].length;
-    let ties = 1;
-
-    for (let i=1; i<wordList.length; i++){
-      if (wordList[i].length === longestWordLength){
-        ties++;
-        longestWords.push(wordList[i].toLowerCase());
+  if (uniqueWords > 10){
+    for (let i=0; i<10; i++){
+      let longestLength = 0;
+      let longestWord = "";
+      for (key in wordLengths){
+        let value = wordLengths[key];
+        if (value > longestLength){
+          longestLength = value;
+          longestWord = key;
+        }
       }
-      if (wordList[i].length > longestWordLength){
-        longestWords = [];
-        longestwords.push(wordList[i].toLowerCase());
-        longestWordLength = wordList[i].length;
-        ties = 1;
-      }
-    }
-
-    ties.sort();
-
-    if ((top10.length + ties) < 10){
-      for (let j=0; j<longestWords.length; j++){
-        top10.push(longestWords[j]);
-      }
-    }
-
-    else {
-      while (top10.length < 10){
-        let j=0;
-        top10.push(longestWords[j]);
-        j++;
-      }
+      top10[i] = longestWord;
+      wordLengths[longestWord] = 0;
     }
   }
+  else {
+    for (let i=0; i<uniqueWords; i++){
+      let longestLength = 0;
+      let longestWord = "";
+      for (key in wordLengths){
+        let value = wordLengths[key];
+        if (value > longestLength){
+          longestLength = value;
+          longestWord = key;
+        }
+      }
+      top10[i] = longestWord;
+      wordLengths[longestWord] = 0;
+    }
+  }
+
+  return top10;
+}
+
+let getMostFrequentWords = function(txt){
+  let cleanedTxt = cleanPunc(txt).trim();
+  let wordList = cleanedTxt.split(/\s+/);
+  let wordCounts = {};
+  for (let i=0; i<wordList.length; i++){
+    wordList[i] = wordList[i].toLowerCase();
+    wordCounts[wordList[i]] = 0;
+  }
+  for (let i=0; i<wordList.length; i++){
+    wordCounts[wordList[i]] += 1;
+  }
+
+  uniqueWords = 0;
+  for (word in wordCounts){
+    uniqueWords++;
+  }
+
+  top10 = [];
+  if (uniqueWords > 10){
+    for (let i=0; i<10; i++){
+      let topFreq = 0;
+      let topWord = "";
+      for (key in wordCounts){
+        let value = wordCounts[key];
+        if (value> topFreq){
+          topFreq = value;
+          topWord = key;
+        }
+      }
+      top10[i]=(topWord + "(" + topFreq + ")");
+      wordCounts[topWord] = 0;
+    }
+  }
+
+  else {
+    for (let i=0; i<uniqueWords; i++){
+      let topFreq = 0;
+      let topWord = "";
+      for (key in wordCounts){
+        let value = wordCounts[key];
+        if (value > topFreq){
+          topFreq = value;
+          topWord = key;
+        }
+      }
+      top10[i]=(topWord + "(" + topFreq + ")");
+      wordCounts[topWord] = 0;
+    }
+  }
+
   return top10;
 }
 
@@ -111,6 +176,6 @@ function getStats(txt) {
         averageWordLength: getAvgWordLength(txt),
         palindromes: getPalindromes(txt),
         longestWords: getLongestWords(txt),
-        mostFrequentWords: [ "hello(7)", "world(1)" ]
+        mostFrequentWords: getMostFrequentWords(txt)
     };
 }
